@@ -16,9 +16,9 @@ class Ui_MainWindow(object):
         self.delete_column_action = self.menu.addAction("Kaydı Sil")
         self.delete_column_action.setIcon(self.delete_icon)
 
-    def messageBox(self):
+    def messageBox(self, mesaj):
         self.message.setIcon(QMessageBox.Warning)
-        self.message.setText("Tüm alanların dolu olması gerekmektedir!")
+        self.message.setText(mesaj)
         self.message.setWindowTitle("Uyarı")
         self.message.setStandardButtons(QMessageBox.Ok)
         self.message.setWindowIcon(self.icon)
@@ -27,7 +27,7 @@ class Ui_MainWindow(object):
     def renkEkle(self):
         if len(self.txtRenkAdi.text()) == 0 \
                 or len(self.txtRenkKodu.text()) == 0:
-            self.messageBox()
+            self.messageBox("Tüm alanların dolu olması gerekmektedir!")
         else:
             db.insert_renk(self.txtRenkAdi.text(), self.txtRenkKodu.text())
             self.RenkListesi()
@@ -37,7 +37,7 @@ class Ui_MainWindow(object):
     def mevsimEkle(self):
         if len(self.txtMevsimAdi.text()) == 0 \
                 or len(self.txtMevsimKodu.text()) == 0:
-            self.messageBox()
+            self.messageBox("Tüm alanların dolu olması gerekmektedir!")
         else:
             db.insert_mevsim(self.txtMevsimAdi.text(), self.txtMevsimKodu.text())
             self.MevsimListesi()
@@ -47,7 +47,7 @@ class Ui_MainWindow(object):
     def kumasEkle(self):
         if len(self.txtKumaAdi.text()) == 0 \
                 or len(self.txtKumasKodu.text()) == 0:
-            self.messageBox()
+            self.messageBox("Tüm alanların dolu olması gerekmektedir!")
         else:
             db.insert_kumas(self.txtKumaAdi.text(), self.txtKumasKodu.text())
             self.KumasListesi()
@@ -57,7 +57,7 @@ class Ui_MainWindow(object):
     def magazaEkle(self):
         if len(self.txtMagazaAdi.text()) == 0 \
                 or len(self.txtMagazaKodu.text()) == 0:
-            self.messageBox()
+            self.messageBox("Tüm alanların dolu olması gerekmektedir!")
         else:
             db.insert_magaza(self.txtMagazaAdi.text(), self.txtMagazaKodu.text())
             self.MagazaListesi()
@@ -67,7 +67,7 @@ class Ui_MainWindow(object):
     def magazaUrunEkle(self):
         if len(self.txtMagazaUrunAdi.text()) == 0 \
                 or len(self.txtMagazaUrunKodu.text()) == 0:
-            self.messageBox()
+            self.messageBox("Tüm alanların dolu olması gerekmektedir!")
         else:
             db.insert_magaza_urunleri(self.txtMagazaUrunAdi.text(), self.txtMagazaUrunKodu.text())
             self.MagazaUrunListesi()
@@ -172,16 +172,17 @@ class Ui_MainWindow(object):
             return ""
 
     def BarkodOlustur(self):
-        barkod = self.txtTarih.text() + self.KodGetir(self.comboBoxMevsim.currentText(),
-                                                      'mevsim') + self.txtUrunKodu.text() + self.KodGetir(
-            self.comboBoxMagaza.currentText(), 'magaza') + self.KodGetir(self.comboBoxMagazaUrun.currentText(),
-                                                                         'magaza_urun') + self.KodGetir(
-            self.comboBoxRenk.currentText(), 'renk') + self.KodGetir(self.comboBoxKumas.currentText(), 'kumas')
+        if len(self.txtUrunKodu.text()) == 0:
+            self.messageBox('Ürün kodu girmeniz gerekmektedir!')
+        else:
+            barkod = self.txtTarih.text() + self.KodGetir(self.comboBoxMevsim.currentText(), 'mevsim') + self.txtUrunKodu.text() + self.KodGetir(
+                self.comboBoxMagaza.currentText(), 'magaza') + self.KodGetir(self.comboBoxMagazaUrun.currentText(),'magaza_urun') + self.KodGetir(
+                self.comboBoxRenk.currentText(), 'renk') + self.KodGetir(self.comboBoxKumas.currentText(), 'kumas')
 
-        db.insert_barkod(self.txtUrunKodu.text(), barkod)
-        self.BarkodListesi()
+            db.insert_barkod(self.txtUrunKodu.text(), barkod)
+            self.BarkodListesi()
 
-        self.txtBarkod.setText(barkod)
+            self.txtBarkod.setText(barkod)
 
     def BarkodAra(self):
         if len(self.txtBarkodUrunKodu.text()) > 0:
@@ -648,62 +649,80 @@ class Ui_MainWindow(object):
         self.message.setWindowIcon(self.icon)
 
     def customContextMenuRenkler(self, pos):
-        action = self.menu.exec_(self.tableWidgetRenkler.viewport().mapToGlobal(pos))
-        if action == self.delete_column_action:
-            self.MessageBoxButon(self.tableWidgetRenkler.item(self.tableWidgetRenkler.currentRow(), 0).text())
-            button = self.message.exec()
-            if button == QMessageBox.Ok:
-                db.delete_renk(self.tableWidgetRenkler.item(self.tableWidgetRenkler.currentRow(), 1).text())
-                self.RenkListesi()
+        try:
+            action = self.menu.exec_(self.tableWidgetRenkler.viewport().mapToGlobal(pos))
+            if action == self.delete_column_action:
+                self.MessageBoxButon(self.tableWidgetRenkler.item(self.tableWidgetRenkler.currentRow(), 0).text())
+                button = self.message.exec()
+                if button == QMessageBox.Ok:
+                    db.delete_renk(self.tableWidgetRenkler.item(self.tableWidgetRenkler.currentRow(), 1).text())
+                    self.RenkListesi()
+        except:
+            self.messageBox('Geçerli bir satır seçmelisiniz!')
 
     def customContextMenuKumaslar(self, pos):
-        action = self.menu.exec_(self.tableWidgetKumaslar.viewport().mapToGlobal(pos))
-        if action == self.delete_column_action:
-            self.MessageBoxButon(self.tableWidgetKumaslar.item(self.tableWidgetKumaslar.currentRow(), 0).text())
-            button = self.message.exec()
-            if button == QMessageBox.Ok:
-                db.delete_kumas(self.tableWidgetKumaslar.item(self.tableWidgetKumaslar.currentRow(), 1).text())
-                self.KumasListesi()
+        try:
+            action = self.menu.exec_(self.tableWidgetKumaslar.viewport().mapToGlobal(pos))
+            if action == self.delete_column_action:
+                self.MessageBoxButon(self.tableWidgetKumaslar.item(self.tableWidgetKumaslar.currentRow(), 0).text())
+                button = self.message.exec()
+                if button == QMessageBox.Ok:
+                    db.delete_kumas(self.tableWidgetKumaslar.item(self.tableWidgetKumaslar.currentRow(), 1).text())
+                    self.KumasListesi()
+        except:
+            self.messageBox('Geçerli bir satır seçmelisiniz!')
 
     def customContextMenuMevsimler(self, pos):
-        action = self.menu.exec_(self.tableWidgetMevsimler.viewport().mapToGlobal(pos))
-        if action == self.delete_column_action:
-            self.MessageBoxButon(self.tableWidgetMevsimler.item(self.tableWidgetMevsimler.currentRow(), 0).text())
-            button = self.message.exec()
-            if button == QMessageBox.Ok:
-                db.delete_mevsim(self.tableWidgetMevsimler.item(self.tableWidgetMevsimler.currentRow(), 1).text())
-                self.MevsimListesi()
+        try:
+            action = self.menu.exec_(self.tableWidgetMevsimler.viewport().mapToGlobal(pos))
+            if action == self.delete_column_action:
+                self.MessageBoxButon(self.tableWidgetMevsimler.item(self.tableWidgetMevsimler.currentRow(), 0).text())
+                button = self.message.exec()
+                if button == QMessageBox.Ok:
+                    db.delete_mevsim(self.tableWidgetMevsimler.item(self.tableWidgetMevsimler.currentRow(), 1).text())
+                    self.MevsimListesi()
+        except:
+            self.messageBox('Geçerli bir satır seçmelisiniz!')
 
     def customContextMenuMagaza(self, pos):
-        action = self.menu.exec_(self.tableWidgetMagazalar.viewport().mapToGlobal(pos))
-        if action == self.delete_column_action:
-            self.MessageBoxButon(self.tableWidgetMagazalar.item(self.tableWidgetMagazalar.currentRow(), 0).text())
-            button = self.message.exec()
-            if button == QMessageBox.Ok:
-                db.delete_magaza(self.tableWidgetMagazalar.item(self.tableWidgetMagazalar.currentRow(), 1).text())
-                self.MagazaListesi()
+        try:
+            action = self.menu.exec_(self.tableWidgetMagazalar.viewport().mapToGlobal(pos))
+            if action == self.delete_column_action:
+                self.MessageBoxButon(self.tableWidgetMagazalar.item(self.tableWidgetMagazalar.currentRow(), 0).text())
+                button = self.message.exec()
+                if button == QMessageBox.Ok:
+                    db.delete_magaza(self.tableWidgetMagazalar.item(self.tableWidgetMagazalar.currentRow(), 1).text())
+                    self.MagazaListesi()
+        except:
+            self.messageBox('Geçerli bir satır seçmelisiniz!')
 
     def customContextMenuMagazaUrunleri(self, pos):
-        action = self.menu.exec_(self.tableWidgetMagazaUrunleri.viewport().mapToGlobal(pos))
-        if action == self.delete_column_action:
-            self.MessageBoxButon(
-                self.tableWidgetMagazaUrunleri.item(self.tableWidgetMagazaUrunleri.currentRow(), 0).text())
-            button = self.message.exec()
-            if button == QMessageBox.Ok:
-                db.delete_magaza_urunleri(
-                    self.tableWidgetMagazaUrunleri.item(self.tableWidgetMagazaUrunleri.currentRow(), 1).text())
-                self.MagazaUrunListesi()
+        try:
+            action = self.menu.exec_(self.tableWidgetMagazaUrunleri.viewport().mapToGlobal(pos))
+            if action == self.delete_column_action:
+                self.MessageBoxButon(
+                    self.tableWidgetMagazaUrunleri.item(self.tableWidgetMagazaUrunleri.currentRow(), 0).text())
+                button = self.message.exec()
+                if button == QMessageBox.Ok:
+                    db.delete_magaza_urunleri(
+                        self.tableWidgetMagazaUrunleri.item(self.tableWidgetMagazaUrunleri.currentRow(), 1).text())
+                    self.MagazaUrunListesi()
+        except:
+            self.messageBox('Geçerli bir satır seçmelisiniz!')
 
     def customContextMenuBarkodListesi(self, pos):
-        action = self.menu.exec_(self.tableWidgetBarkodListesi.viewport().mapToGlobal(pos))
-        if action == self.delete_column_action:
-            self.MessageBoxButon(
-                self.tableWidgetBarkodListesi.item(self.tableWidgetBarkodListesi.currentRow(), 0).text())
-            button = self.message.exec()
-            if button == QMessageBox.Ok:
-                db.delete_barkod(
-                    self.tableWidgetBarkodListesi.item(self.tableWidgetBarkodListesi.currentRow(), 1).text())
-                self.BarkodListesi()
+        try:
+            action = self.menu.exec_(self.tableWidgetBarkodListesi.viewport().mapToGlobal(pos))
+            if action == self.delete_column_action:
+                self.MessageBoxButon(
+                    self.tableWidgetBarkodListesi.item(self.tableWidgetBarkodListesi.currentRow(), 0).text())
+                button = self.message.exec()
+                if button == QMessageBox.Ok:
+                    db.delete_barkod(
+                        self.tableWidgetBarkodListesi.item(self.tableWidgetBarkodListesi.currentRow(), 1).text())
+                    self.BarkodListesi()
+        except:
+            self.messageBox('Geçerli bir satır seçmelisiniz!')
 
 
 if __name__ == "__main__":
