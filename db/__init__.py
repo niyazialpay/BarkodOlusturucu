@@ -151,3 +151,26 @@ def select_barkod(kod=None):
 def delete_barkod(kod):
     db.execute("delete from barkod_listesi where barkod='" + str(regex.integer(kod)) + "'")
     connection.commit()
+
+
+def insert_beden(isim, kodu):
+    db.execute(
+        "insert into bedenler (beden_adi, beden_kodu) values ('" + str(
+            regex.string(isim)) + "', '" + str(
+            regex.integer(kodu)) + "')")
+    connection.commit()
+
+
+def select_beden(isim=None):
+    if isim is None:
+        db.execute("select * from bedenler order by beden_adi asc")
+        result = db.fetchall()
+    else:
+        db.execute("select * from bedenler where beden_adi='" + str(regex.string(isim)) + "'")
+        result = db.fetchone()["beden_kodu"]
+    return result
+
+
+def delete_beden(kod):
+    db.execute("delete from bedenler where beden_kodu='" + str(regex.integer(kod)) + "'")
+    connection.commit()
