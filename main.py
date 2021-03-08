@@ -1,7 +1,9 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QVBoxLayout, QWidget, QLabel
 
 import db
+
+import details
 
 
 class Ui_MainWindow(object):
@@ -29,7 +31,10 @@ class Ui_MainWindow(object):
                 or len(self.txtRenkKodu.text()) == 0:
             self.messageBox("Tüm alanların dolu olması gerekmektedir!")
         else:
-            db.insert_renk(self.txtRenkAdi.text(), self.txtRenkKodu.text())
+            try:
+                db.insert_renk(self.txtRenkAdi.text(), self.txtRenkKodu.text())
+            except:
+                self.messageBox("Aynı kayıt iki kere girilememektedir!")
             self.RenkListesi()
             self.txtRenkAdi.clear()
             self.txtRenkKodu.clear()
@@ -39,7 +44,10 @@ class Ui_MainWindow(object):
                 or len(self.txtMevsimKodu.text()) == 0:
             self.messageBox("Tüm alanların dolu olması gerekmektedir!")
         else:
-            db.insert_mevsim(self.txtMevsimAdi.text(), self.txtMevsimKodu.text())
+            try:
+                db.insert_mevsim(self.txtMevsimAdi.text(), self.txtMevsimKodu.text())
+            except:
+                self.messageBox('Aynı kayıt iki kere girilememektedir!')
             self.MevsimListesi()
             self.txtMevsimAdi.clear()
             self.txtMevsimKodu.clear()
@@ -49,7 +57,10 @@ class Ui_MainWindow(object):
                 or len(self.txtKumasKodu.text()) == 0:
             self.messageBox("Tüm alanların dolu olması gerekmektedir!")
         else:
-            db.insert_kumas(self.txtKumaAdi.text(), self.txtKumasKodu.text())
+            try:
+                db.insert_kumas(self.txtKumaAdi.text(), self.txtKumasKodu.text())
+            except:
+                self.messageBox('Aynı kayıt iki kere girilememektedir!')
             self.KumasListesi()
             self.txtKumaAdi.clear()
             self.txtKumasKodu.clear()
@@ -59,7 +70,10 @@ class Ui_MainWindow(object):
                 or len(self.txtMagazaKodu.text()) == 0:
             self.messageBox("Tüm alanların dolu olması gerekmektedir!")
         else:
-            db.insert_magaza(self.txtMagazaAdi.text(), self.txtMagazaKodu.text())
+            try:
+                db.insert_magaza(self.txtMagazaAdi.text(), self.txtMagazaKodu.text())
+            except:
+                self.messageBox('Aynı kayıt iki kere girilememektedir!')
             self.MagazaListesi()
             self.txtMagazaAdi.clear()
             self.txtMagazaKodu.clear()
@@ -69,7 +83,10 @@ class Ui_MainWindow(object):
                 or len(self.txtMagazaUrunKodu.text()) == 0:
             self.messageBox("Tüm alanların dolu olması gerekmektedir!")
         else:
-            db.insert_magaza_urunleri(self.txtMagazaUrunAdi.text(), self.txtMagazaUrunKodu.text())
+            try:
+                db.insert_magaza_urunleri(self.txtMagazaUrunAdi.text(), self.txtMagazaUrunKodu.text())
+            except:
+                self.messageBox('Aynı kayıt iki kere girilememektedir!')
             self.MagazaUrunListesi()
             self.txtMagazaUrunAdi.clear()
             self.txtMagazaUrunKodu.clear()
@@ -79,7 +96,10 @@ class Ui_MainWindow(object):
                 or len(self.txtBedenKodu.text()) == 0:
             self.messageBox("Tüm alanların dolu olması gerekmektedir!")
         else:
-            db.insert_beden(self.txtBedenAd.text(), self.txtBedenKodu.text())
+            try:
+                db.insert_beden(self.txtBedenAd.text(), self.txtBedenKodu.text())
+            except:
+                self.messageBox('Aynı kayıt iki kere girilememektedir!')
             self.BedenListesi()
             self.txtBedenAd.clear()
             self.txtBedenKodu.clear()
@@ -163,7 +183,7 @@ class Ui_MainWindow(object):
         for row_number, row_data in enumerate(bedenler):
             self.tableWidgetBedenler.insertRow(row_number)
             self.tableWidgetBedenler.setItem(row_number, 0, QtWidgets.QTableWidgetItem(str(row_data["beden_adi"])))
-            self.tableWidgetBedenler.setItem(row_number, 1,QtWidgets.QTableWidgetItem(str(row_data["beden_kodu"])))
+            self.tableWidgetBedenler.setItem(row_number, 1, QtWidgets.QTableWidgetItem(str(row_data["beden_kodu"])))
 
             self.comboBoxBeden.addItem(str(row_data["beden_adi"]))
 
@@ -201,10 +221,20 @@ class Ui_MainWindow(object):
             self.messageBox('Ürün kodu girmeniz gerekmektedir!')
         else:
             barkod = self.txtTarih.text() + self.KodGetir(self.comboBoxMevsim.currentText(), 'mevsim') + self.txtUrunKodu.text() + self.KodGetir(
-                self.comboBoxMagaza.currentText(), 'magaza') + self.KodGetir(self.comboBoxMagazaUrun.currentText(),'magaza_urun') + self.KodGetir(self.comboBoxBeden.currentText(), 'beden') + self.KodGetir(
+                self.comboBoxMagaza.currentText(), 'magaza') + self.KodGetir(self.comboBoxMagazaUrun.currentText(), 'magaza_urun') + self.KodGetir(self.comboBoxBeden.currentText(), 'beden') + self.KodGetir(
                 self.comboBoxRenk.currentText(), 'renk') + self.KodGetir(self.comboBoxKumas.currentText(), 'kumas')
 
-            db.insert_barkod(self.txtUrunKodu.text(), barkod)
+            db.insert_barkod(
+                self.txtUrunKodu.text(),
+                barkod,
+                self.txtTarih.text(),
+                mevsim=self.comboBoxMevsim.currentText(),
+                magaza=self.comboBoxMagaza.currentText(),
+                magaza_urun=self.comboBoxMagazaUrun.currentText(),
+                renk=self.comboBoxRenk.currentText(),
+                beden=self.comboBoxBeden.currentText(),
+                kumas=self.comboBoxKumas.currentText()
+            )
             self.BarkodListesi()
 
             self.txtBarkod.setText(barkod)
@@ -254,39 +284,29 @@ class Ui_MainWindow(object):
         self.txtUrunKodu.setObjectName("txtUrunKodu")
         self.label = QtWidgets.QLabel(self.tab_3)
         self.label.setGeometry(QtCore.QRect(106, 10, 47, 16))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.label.setFont(font)
+        font12 = QtGui.QFont()
+        font12.setPointSize(12)
+        self.label.setFont(font12)
         self.label.setObjectName("label")
         self.label_2 = QtWidgets.QLabel(self.tab_3)
         self.label_2.setGeometry(QtCore.QRect(106, 46, 61, 20))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.label_2.setFont(font)
+        self.label_2.setFont(font12)
         self.label_2.setObjectName("label_2")
         self.label_3 = QtWidgets.QLabel(self.tab_3)
         self.label_3.setGeometry(QtCore.QRect(106, 88, 101, 21))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.label_3.setFont(font)
+        self.label_3.setFont(font12)
         self.label_3.setObjectName("label_3")
         self.label_4 = QtWidgets.QLabel(self.tab_3)
         self.label_4.setGeometry(QtCore.QRect(106, 124, 141, 31))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.label_4.setFont(font)
+        self.label_4.setFont(font12)
         self.label_4.setObjectName("label_4")
         self.label_5 = QtWidgets.QLabel(self.tab_3)
         self.label_5.setGeometry(QtCore.QRect(106, 255, 101, 21))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.label_5.setFont(font)
+        self.label_5.setFont(font12)
         self.label_5.setObjectName("label_5")
         self.label_6 = QtWidgets.QLabel(self.tab_3)
         self.label_6.setGeometry(QtCore.QRect(106, 293, 101, 21))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.label_6.setFont(font)
+        self.label_6.setFont(font12)
         self.label_6.setObjectName("label_6")
         self.comboBoxRenk = QtWidgets.QComboBox(self.tab_3)
         self.comboBoxRenk.setGeometry(QtCore.QRect(292, 252, 141, 22))
@@ -321,9 +341,9 @@ class Ui_MainWindow(object):
         self.line_5.setObjectName("line_5")
         self.txtBarkod = QtWidgets.QLineEdit(self.tab_3)
         self.txtBarkod.setGeometry(QtCore.QRect(51, 368, 441, 31))
-        font = QtGui.QFont()
-        font.setPointSize(14)
-        self.txtBarkod.setFont(font)
+        font14 = QtGui.QFont()
+        font14.setPointSize(14)
+        self.txtBarkod.setFont(font14)
         self.txtBarkod.setReadOnly(True)
         self.txtBarkod.setObjectName("txtBarkod")
         self.pushButtonOlustur = QtWidgets.QPushButton(self.tab_3)
@@ -336,9 +356,7 @@ class Ui_MainWindow(object):
         self.line_6.setObjectName("line_6")
         self.label_7 = QtWidgets.QLabel(self.tab_3)
         self.label_7.setGeometry(QtCore.QRect(105, 161, 141, 31))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.label_7.setFont(font)
+        self.label_7.setFont(font12)
         self.label_7.setObjectName("label_7")
         self.comboBoxMagaza = QtWidgets.QComboBox(self.tab_3)
         self.comboBoxMagaza.setGeometry(QtCore.QRect(291, 124, 141, 22))
@@ -348,9 +366,7 @@ class Ui_MainWindow(object):
         self.comboBoxMagazaUrun.setObjectName("comboBoxMagazaUrun")
         self.label_8 = QtWidgets.QLabel(self.tab_3)
         self.label_8.setGeometry(QtCore.QRect(105, 210, 101, 21))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.label_8.setFont(font)
+        self.label_8.setFont(font12)
         self.label_8.setObjectName("label_8")
         self.line_7 = QtWidgets.QFrame(self.tab_3)
         self.line_7.setGeometry(QtCore.QRect(101, 187, 331, 16))
@@ -368,6 +384,7 @@ class Ui_MainWindow(object):
         self.tableWidgetBarkodListesi.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.tableWidgetBarkodListesi.setCornerButtonEnabled(False)
         self.tableWidgetBarkodListesi.setObjectName("tableWidgetBarkodListesi")
+        self.tableWidgetBarkodListesi.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tableWidgetBarkodListesi.setColumnCount(2)
         self.tableWidgetBarkodListesi.setRowCount(0)
         item = QtWidgets.QTableWidgetItem()
@@ -412,11 +429,7 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         item.setFont(font)
         self.tableWidgetRenkler.setHorizontalHeaderItem(0, item)
-        item = QtWidgets.QTableWidgetItem()
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        item.setFont(font)
+
         self.tableWidgetRenkler.setHorizontalHeaderItem(1, item)
         self.tableWidgetRenkler.horizontalHeader().setDefaultSectionSize(225)
         self.tableWidgetRenkler.horizontalHeader().setMinimumSectionSize(225)
@@ -649,6 +662,10 @@ class Ui_MainWindow(object):
         self.pushButtonOlustur.clicked.connect(self.BarkodOlustur)
         self.pushButtonBarkodAra.clicked.connect(self.BarkodAra)
 
+        self.tableWidgetBarkodListesi.doubleClicked.connect(self.BarkodDetaylari)
+
+        self.txtBarkodUrunKodu.returnPressed.connect(self.BarkodAra)
+
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -728,6 +745,20 @@ class Ui_MainWindow(object):
         self.txtMagazaUrunKodu.setPlaceholderText(_translate("MainWindow", "Mağaza Ürün Kodu"))
         self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.tab_7), _translate("MainWindow", "Mağaza Ürünleri"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Diğer Kodlar"))
+
+    def BarkodDetaylari(self):
+        w = details.BarkodList()
+        barkod = db.select_barkod(self.tableWidgetBarkodListesi.item(self.tableWidgetBarkodListesi.currentRow(), 1).text())[0]
+        w.setWindowTitle(barkod["barkod"])
+        w.lineEditTarih.setText(barkod["tarih"])
+        w.lineEditUrunKodu.setText(barkod["urun_kodu"])
+        w.lineEditBeden.setText(barkod["beden"])
+        w.lineEditMevsim.setText(barkod["mevsim"])
+        w.lineEditRenk.setText(barkod["renk"])
+        w.lineEditKumasTuru.setText(barkod["kumas"])
+        w.lineEditMagazaKodu.setText(barkod["magaza"])
+        w.lineEditMagazaUrunKodu.setText(barkod["magaza_urun"])
+        w.exec_()
 
     def MessageBoxButon(self, item):
         self.message.setIcon(QMessageBox.Warning)

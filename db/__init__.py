@@ -19,9 +19,7 @@ def check_db():
 
 
 def insert_kumas(isim, kod):
-    db.execute(
-        "insert into kumaslar (kumas_adi, kumas_kodu) values ('" + str(regex.string(isim)) + "', '" + str(
-            regex.integer(kod)) + "')")
+    db.execute("insert into kumaslar (kumas_adi, kumas_kodu) values ('" + str(regex.string(isim)) + "', '" + str(regex.integer(kod)) + "')")
     connection.commit()
 
 
@@ -36,9 +34,7 @@ def select_kumas(isim=None):
 
 
 def insert_renk(isim, kodu):
-    db.execute(
-        "insert into renkler (renk_adi, renk_kodu) values ('" + str(regex.string(isim)) + "', '" + str(
-            regex.integer(kodu)) + "')")
+    db.execute("insert into renkler (renk_adi, renk_kodu) values ('" + str(regex.string(isim)) + "', '" + str(regex.integer(kodu)) + "')")
     connection.commit()
 
 
@@ -53,9 +49,7 @@ def select_renk(isim=None):
 
 
 def insert_mevsim(isim, kodu):
-    db.execute(
-        "insert into mevsimler (mevsim_adi, mevsim_kodu) values ('" + str(regex.string(isim)) + "', '" + str(
-            regex.integer(kodu)) + "')")
+    db.execute("insert into mevsimler (mevsim_adi, mevsim_kodu) values ('" + str(regex.string(isim)) + "', '" + str(regex.integer(kodu)) + "')")
     connection.commit()
 
 
@@ -70,8 +64,7 @@ def select_mevsim(isim=None):
 
 
 def insert_magaza(isim, kodu):
-    db.execute(
-        "insert into magazalar (magaza_adi, magaza_kodu) values ('" + str(regex.string(isim)) + "', '" + str(
+    db.execute("insert into magazalar (magaza_adi, magaza_kodu) values ('" + str(regex.string(isim)) + "', '" + str(
             regex.integer(kodu)) + "')")
     connection.commit()
 
@@ -87,8 +80,7 @@ def select_magaza(isim=None):
 
 
 def insert_magaza_urunleri(isim, kodu):
-    db.execute(
-        "insert into magaza_urunleri (magaza_urun_adi, magaza_urun_kodu) values ('" + str(
+    db.execute("insert into magaza_urunleri (magaza_urun_adi, magaza_urun_kodu) values ('" + str(
             regex.string(isim)) + "', '" + str(
             regex.integer(kodu)) + "')")
     connection.commit()
@@ -129,11 +121,10 @@ def delete_renk(kod):
     connection.commit()
 
 
-def insert_barkod(urun_kodu, barkod):
-    db.execute(
-        "insert into barkod_listesi (urun_kodu, barkod) values ('" + str(
+def insert_barkod(urun_kodu, barkod, tarih, beden=None, kumas=None, magaza=None, magaza_urun=None, mevsim=None, renk=None):
+    db.execute("insert into barkod_listesi (urun_kodu, barkod, beden, kumas, magaza, magaza_urun, mevsim, renk, tarih) values ('" + str(
             regex.integer(urun_kodu)) + "', '" + str(
-            regex.integer(barkod)) + "')")
+            regex.integer(barkod)) + "', '" + regex.string(beden) + "', '" + regex.string(kumas) + "' ,'" + regex.string(magaza) + "' ,'" + regex.string(magaza_urun) + "', '" + regex.string(mevsim) + "', '" + regex.string(renk) + "', '" + regex.string(tarih) + "')")
     connection.commit()
 
 
