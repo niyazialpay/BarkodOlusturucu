@@ -121,8 +121,9 @@ def delete_renk(kod):
     connection.commit()
 
 
-def insert_barkod(urun_kodu, barkod, tarih, beden=None, kumas=None, magaza=None, magaza_urun=None, mevsim=None, renk=None):
-    db.execute("insert into barkod_listesi (urun_kodu, barkod, beden, kumas, magaza, magaza_urun, mevsim, renk, tarih) values ('" + str(
+def insert_barkod(urun_adi, urun_kodu, barkod, tarih, beden=None, kumas=None, magaza=None, magaza_urun=None, mevsim=None, renk=None):
+    db.execute("insert into barkod_listesi (urun_adi, urun_kodu, barkod, beden, kumas, magaza, magaza_urun, mevsim, renk, tarih) values ('" + str(
+            regex.string(urun_adi)) + "', '" + str(
             regex.integer(urun_kodu)) + "', '" + str(
             regex.integer(barkod)) + "', '" + regex.string(beden) + "', '" + regex.string(kumas) + "' ,'" + regex.string(magaza) + "' ,'" + regex.string(magaza_urun) + "', '" + regex.string(mevsim) + "', '" + regex.string(renk) + "', '" + regex.string(tarih) + "')")
     connection.commit()
@@ -130,10 +131,11 @@ def insert_barkod(urun_kodu, barkod, tarih, beden=None, kumas=None, magaza=None,
 
 def select_barkod(kod=None):
     if kod is None:
-        query = "select * from barkod_listesi order by urun_kodu desc"
+        query = "select * from barkod_listesi order by urun_adi asc, urun_kodu desc"
     else:
         query = "select * from barkod_listesi where urun_kodu='" + str(regex.integer(kod)) + "' or barkod='" + str(
-            regex.integer(kod)) + "' limit 1"
+            regex.integer(kod)) + "' or urun_adi='" + str(
+            regex.string(kod)) + "' limit 1"
     db.execute(query)
     result = db.fetchall()
     return result
