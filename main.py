@@ -309,7 +309,7 @@ class Ui(QtWidgets.QMainWindow):
         w = details.detailsDialog()
         barkod = \
         db.select_barkod(self.tableWidgetBarkodListesi.item(self.tableWidgetBarkodListesi.currentRow(), 2).text())[0]
-        w.setWindowTitle(barkod["barkod"])
+        w.setWindowTitle(str(barkod["urun_adi"]) + " - " + barkod["barkod"])
         w.lineEditTarih.setText(barkod["tarih"])
         w.lineEditUrunKodu.setText(barkod["urun_kodu"])
         w.lineEditBeden.setText(barkod["beden"])
