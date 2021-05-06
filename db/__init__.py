@@ -135,7 +135,7 @@ def select_barkod(kod=None):
     else:
         query = "select * from barkod_listesi where urun_kodu='" + str(regex.integer(kod)) + "' or barkod='" + str(
             regex.integer(kod)) + "' or urun_adi='" + str(
-            regex.string(kod)) + "' limit 1"
+            regex.string(kod)) + "'"
     db.execute(query)
     result = db.fetchall()
     return result
